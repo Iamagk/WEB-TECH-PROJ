@@ -1,41 +1,38 @@
-const { PrismaClient } = require('@prisma/client');
+const express = require('express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
 
-const prisma = new PrismaClient();
+// Importing routes
+const courseRoutes = require('./routes/courseRoutes');
 
-async function main() {
-  // Create a new user
-  const newUser = await prisma.user.create({
-    data: {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-    },
-  });
-  console.log('Created User:', newUser);
+// Environment variables
+dotenv.config();
+const PORT = process.env.PORT || 8000;
+const MONGO_URI = process.env.MONGO_URI; // MongoDB connection string
 
-  // Fetch all users
-  const users = await prisma.user.findMany();
-  console.log('All Users:', users);
-}
-async function main() {
-  // Create a new user
-  const newUser = await prisma.student.create({
-    data: {
-      usn:16,
-      name:"akshay",
-      email: 'akshay@gmail.com',
-    },
-  });
-  console.log('Created User:', newUser);
+// Initialize Express
+const app = express();
 
-  // Fetch all users
-  const users = await prisma.user.findMany();
-  console.log('All Users:', users);
-}
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// MongoDB Connection
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to MongoDB');
   })
-  .finally(async () => {
-    await prisma.$disconnect();
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error.message);
+    process.exit(1); // Exit the application if the connection fails
   });
+
+// Main route prefix
+app.use('/v0', courseRoutes);
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
