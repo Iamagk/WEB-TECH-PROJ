@@ -23,3 +23,18 @@ model Student{
   name String 
   email String @unique
 }
+
+model Course {
+  id          Int      @id @default(autoincrement())
+  name        String
+  code        String
+  courseDesign String? 
+  questionBank String? 
+  timeTable    String? 
+  calendar     String? 
+  studentList  String? 
+  questionPaper String? 
+  pacMom       String? 
+  iaMarks      Json 
+  pbl          Json 
+}
