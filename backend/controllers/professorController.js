@@ -1,6 +1,6 @@
 const Professor = require('../models/professorModel');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+ const bcrypt = require('bcrypt');
 const { z } = require('zod');
 
 // Define Zod schemas

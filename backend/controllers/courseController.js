@@ -1,7 +1,8 @@
+const { z } = require('zod');
 const Course = require('../models/courseModel');
 const Professor = require('../models/professorModel');
-const { z } = require('zod');
-// Define Zod schemas
+
+// Define your Zod schema for course creation
 const createCourseSchema = z.object({
   code: z.string().min(1, 'Course code is required.'),
   name: z.string().min(1, 'Course name is required.'),
@@ -11,18 +12,16 @@ const createCourseSchema = z.object({
   professorEmail: z.string().email('Invalid professor email format.'),
 });
 
-// Fetch courses assigned to the authenticated professor
+// Controller to get assigned courses
 const getAssignedCourses = async (req, res) => {
   try {
-    const professorEmail = req.professor.email; // Extract professor email from the validated token
-
-    // Find professor by email
+    const professorEmail = req.professor.email;
     const professor = await Professor.findOne({ email: professorEmail });
+
     if (!professor) {
       return res.status(404).json({ message: 'Professor not found.' });
     }
 
-    // Fetch courses assigned to the professor
     const courses = await Course.find({ professor: professor._id });
     if (courses.length === 0) {
       return res.status(404).json({ message: 'No courses assigned to this professor.' });
@@ -35,24 +34,21 @@ const getAssignedCourses = async (req, res) => {
   }
 };
 
-// Create a new course
+// Controller to create a new course
 const createCourse = async (req, res) => {
   try {
-    // Validate request body with Zod
     const validation = createCourseSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({ message: 'Invalid input.', errors: validation.error.errors });
     }
 
     const { code, name, batch, category, section, professorEmail } = validation.data;
-
-    // Find professor by email
     const professor = await Professor.findOne({ email: professorEmail });
+
     if (!professor) {
       return res.status(404).json({ message: 'Professor not found.' });
     }
 
-    // Create new course
     const newCourse = new Course({
       code,
       name,
@@ -70,6 +66,7 @@ const createCourse = async (req, res) => {
   }
 };
 
+// Export the functions for use in routes
 module.exports = {
   getAssignedCourses,
   createCourse,
