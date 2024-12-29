@@ -33,7 +33,7 @@ const AuthPage = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-maroon-600">
-              Email Address
+              College Email Address
             </label>
             <input
               type="email"

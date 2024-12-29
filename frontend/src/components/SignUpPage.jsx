@@ -18,7 +18,7 @@ const SignUpPage = () => {
         <form>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-red-600">
-              Email Address
+              College Email Address
             </label>
             <input
               type="email"
@@ -28,7 +28,7 @@ const SignUpPage = () => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-red-600">
+            <label htmlFor="password" className="block text-sm font-medium text-black-600">
               Password
             </label>
             <input
