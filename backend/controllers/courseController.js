@@ -1,55 +1,76 @@
-const prisma = require('../prisma'); // Prisma client
+const Course = require('../models/courseModel');
+const Professor = require('../models/professorModel');
+const { z } = require('zod');
+// Define Zod schemas
+const createCourseSchema = z.object({
+  code: z.string().min(1, 'Course code is required.'),
+  name: z.string().min(1, 'Course name is required.'),
+  batch: z.string().regex(/^\d{4}-\d{4}$/, 'Batch should be in the format YYYY-YYYY.'),
+  category: z.enum(['Core', 'Elective'], 'Invalid category. Use "Core" or "Elective".'),
+  section: z.string().min(1, 'Section is required.'),
+  professorEmail: z.string().email('Invalid professor email format.'),
+});
 
-// Controller to get courses assigned to the logged-in professor
+// Fetch courses assigned to the authenticated professor
 const getAssignedCourses = async (req, res) => {
   try {
-    // Get the logged-in professor's email from the user attached to the request
-    const professorEmail = req.user.email;
+    const professorEmail = req.professor.email; // Extract professor email from the validated token
 
-    // Fetch the professor's details (including id) using email
-    const professor = await prisma.professor.findUnique({
-      where: { email: professorEmail },
-    });
-
-    // If the professor does not exist, return a 404 error
+    // Find professor by email
+    const professor = await Professor.findOne({ email: professorEmail });
     if (!professor) {
-      return res.status(404).json({ message: 'Professor not found' });
+      return res.status(404).json({ message: 'Professor not found.' });
     }
 
-    // Now fetch the courses assigned to this professor using their id
-    const courses = await prisma.course.findMany({
-      where: {
-        professorId: professor.id, // Use the professor's id to filter courses
-      },
-      select: {
-        id: true,
-        name: true,
-        code: true,
-        courseDesign: true,
-        questionBank: true,
-        timeTable: true,
-        calendar: true,
-        studentList: true,
-        questionPaper: true,
-        pacMom: true,
-        iaMarks: true,
-        pbl: true,
-      },
+    // Fetch courses assigned to the professor
+    const courses = await Course.find({ professor: professor._id });
+    if (courses.length === 0) {
+      return res.status(404).json({ message: 'No courses assigned to this professor.' });
+    }
+
+    res.status(200).json({ courses });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error.' });
+  }
+};
+
+// Create a new course
+const createCourse = async (req, res) => {
+  try {
+    // Validate request body with Zod
+    const validation = createCourseSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ message: 'Invalid input.', errors: validation.error.errors });
+    }
+
+    const { code, name, batch, category, section, professorEmail } = validation.data;
+
+    // Find professor by email
+    const professor = await Professor.findOne({ email: professorEmail });
+    if (!professor) {
+      return res.status(404).json({ message: 'Professor not found.' });
+    }
+
+    // Create new course
+    const newCourse = new Course({
+      code,
+      name,
+      batch,
+      category,
+      section,
+      professor: professor._id,
     });
 
-    // If no courses are found, return an appropriate message
-    if (courses.length === 0) {
-      return res.status(404).json({ message: 'No courses assigned to you' });
-    }
-
-    // Return the list of assigned courses
-    res.status(200).json(courses);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    await newCourse.save();
+    res.status(201).json({ message: 'Course created successfully.', course: newCourse });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error.', error: err.message });
   }
 };
 
 module.exports = {
   getAssignedCourses,
+  createCourse,
 };
