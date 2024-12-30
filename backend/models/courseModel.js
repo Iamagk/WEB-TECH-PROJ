@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+// add semester also
 const courseSchema = new mongoose.Schema({
   code: {
     type: String,

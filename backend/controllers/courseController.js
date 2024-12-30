@@ -1,9 +1,10 @@
 const Course = require('../models/courseModel');
 const Professor = require('../models/professorModel');
 const { z } = require('zod');
+
 // Define Zod schemas
 const createCourseSchema = z.object({
-  code: z.string().min(1, 'Course code is required.'),  
+  code: z.string().min(1, 'Course code is required.'),
   name: z.string().min(1, 'Course name is required.'),
   batch: z.string().regex(/^\d{4}-\d{4}$/, 'Batch should be in the format YYYY-YYYY.'),
   category: z.enum(['Core', 'Elective'], 'Invalid category. Use "Core" or "Elective".'),
@@ -13,7 +14,7 @@ const createCourseSchema = z.object({
 
 // Fetch courses assigned to the authenticated professor
 const getAssignedCourses = async (req, res) => {
-  try { 
+  try {
     const professorEmail = req.professor.email; // Extract professor email from the validated token
 
     // Find professor by email
