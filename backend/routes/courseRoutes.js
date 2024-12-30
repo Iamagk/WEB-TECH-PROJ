@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { getAssignedCourses, createCourse } = require('../controllers/courseController');
-const authenticate = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
+const roleMiddleware = require('../middlewares/roleMiddleware');
 
-// Route to fetch courses assigned to the authenticated professor
-router.get('/assigned-courses', authenticate, getAssignedCourses);
+// Only allow admins to create courses
+router.post('/courses', authMiddleware, roleMiddleware('admin'), createCourse);
 
-// Route to create a new course (accessible by authorized users)
-router.post('/create-course', authenticate, createCourse);
+// Professors can view their assigned courses
+router.get('/courses', authMiddleware, roleMiddleware('professor'), getAssignedCourses);
 
 module.exports = router;

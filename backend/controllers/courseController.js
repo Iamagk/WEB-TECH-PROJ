@@ -1,6 +1,7 @@
 const Course = require('../models/courseModel');
 const Professor = require('../models/professorModel');
 const { z } = require('zod');
+
 // Define Zod schemas
 const createCourseSchema = z.object({
   code: z.string().min(1, 'Course code is required.'),
