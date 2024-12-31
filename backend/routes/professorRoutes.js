@@ -5,7 +5,7 @@ const {
   loginProfessor,
   getProfessorProfile,
 } = require('../controllers/professorController');
-const authenticate = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // Route to sign up a new professor
 router.post('/signup', signupProfessor);
@@ -14,6 +14,6 @@ router.post('/signup', signupProfessor);
 router.post('/login', loginProfessor);
 
 // Route to fetch the authenticated professor's profile
-router.get('/profile', authenticate, getProfessorProfile);
+router.get('/profile', authMiddleware, getProfessorProfile);
 
 module.exports = router;

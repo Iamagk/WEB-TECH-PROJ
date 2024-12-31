@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 
 // Importing routes
 const courseRoutes = require('./routes/courseRoutes');
-
+const professorRoutes = require('./routes/professorRoutes');
 // Environment variables
 dotenv.config();
 const PORT = process.env.PORT || 8000;
@@ -31,6 +31,8 @@ mongoose
 
 // Main route prefix
 app.use('/v0', courseRoutes);
+
+app.use('/v0', professorRoutes);
 
 // Start the server
 app.listen(PORT, () => {

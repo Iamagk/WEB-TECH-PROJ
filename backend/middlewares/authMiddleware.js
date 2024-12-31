@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { z } = require('zod');
 
+// Zod validation for token
 const tokenSchema = z.object({
   email: z.string().email(),
   role: z.string().min(1), // Ensure role is included in the token
@@ -19,7 +20,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+    console.log('Decoded token:', decoded); // Debugging: Log the decoded token
     // Validate decoded token with Zod
     const validatedPayload = tokenSchema.safeParse(decoded);
     if (!validatedPayload.success) {
