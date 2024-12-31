@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const professorSchema = new mongoose.Schema(
   {
     name: {
@@ -26,3 +27,4 @@ const professorSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+module.exports = professorSchema
