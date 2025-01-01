@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
-
+const cors = require("cors");
 // Importing routes
 const courseRoutes = require('./routes/courseRoutes');
 const professorRoutes = require('./routes/professorRoutes');
@@ -13,6 +13,16 @@ const MONGO_URI = process.env.MONGO_URI; // MongoDB connection string
 
 // Initialize Express
 const app = express();
+
+
+const corsOptions = {
+  origin: "http://localhost:5173", // Frontend URL
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
+  credentials: true, // If you need cookies or auth headers
+};
+app.use(cors(corsOptions));
+
 
 // Middleware
 app.use(bodyParser.json());
