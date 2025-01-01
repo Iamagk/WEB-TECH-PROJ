@@ -3,24 +3,24 @@ import { Link, useNavigate } from "react-router-dom";
 
 const DashPage = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-    
+
     const [userInfo] = useState({
         name: "John Doe",
         email: "john.doe@example.com",
     });
 
-    const [courses] = useState([
-        { code: "BCS501", name: "Software Engineering", semester: "5", section:"A", category: "T", batch: "2022" },
-        { code: "BCS502", name: "Computer Networks", semester: "5", section:"A", category: "T", batch: "2022" },
-        { code: "BCS503", name: "Theory of Computation", semester: "5", section:"A", category: "T", batch: "2022" },
-        { code: "BCSL504", name: "Web Technology Laboratory", semester: "5", section:"A", category: "L", batch: "2022" },
+    const [courses, setCourses] = useState([
+        { code: "BCS501", name: "Software Engineering", semester: "5", section: "A", category: "T", batch: "2022" },
+        { code: "BCS502", name: "Computer Networks", semester: "5", section: "A", category: "T", batch: "2022" },
+        { code: "BCS503", name: "Theory of Computation", semester: "5", section: "A", category: "T", batch: "2022" },
+        { code: "BCSL504", name: "Web Technology Laboratory", semester: "5", section: "A", category: "L", batch: "2022" },
     ]);
 
-    const navigate = useNavigate();  // Initialize useNavigate
+    const navigate = useNavigate(); // Initialize useNavigate
 
     // Function to handle logout
     const handleLogout = () => {
-        navigate("/");  // Redirect to the sign-in page
+        navigate("/"); // Redirect to the sign-in page
     };
 
     const courseCategory = (category) => {
@@ -29,8 +29,21 @@ const DashPage = () => {
         } else if (category === "L") {
             return "Laboratory";
         } else {
-            return "Unknown";  // In case the category is neither T nor L
+            return "Unknown"; // In case the category is neither T nor L
         }
+    };
+
+    // Function to handle adding a course
+    const handleAddCourse = () => {
+        const newCourse = {
+            code: `BCS50${courses.length + 5}`,
+            name: "New Course",
+            semester: "5",
+            section: "A",
+            category: "T",
+            batch: "2022",
+        };
+        setCourses([...courses, newCourse]);
     };
 
     return (
@@ -123,10 +136,32 @@ const DashPage = () => {
                             >
                                 Course File
                             </Link>
-
                         </div>
                     ))}
                 </div>
+
+                {/* Floating Add Course Button */}
+                <button
+                    onClick={handleAddCourse}
+                    className="fixed bottom-9 right-9 bg-red-700 text-white px-7 py-4 flex items-center space-x-2 rounded-lg shadow-lg hover:bg-red-900 focus:outline-none"
+                >
+                    <span>Add Course</span>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 4v16m8-8H4"
+                        />
+                    </svg>
+                </button>
+
             </div>
         </div>
     );
