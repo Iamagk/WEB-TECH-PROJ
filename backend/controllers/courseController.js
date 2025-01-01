@@ -15,7 +15,8 @@ const createCourseSchema = z.object({
 // Fetch courses assigned to the authenticated professor
 const getAssignedCourses = async (req, res) => {
   try {
-    const professorEmail = req.professor.email; // Extract professor email from the validated token
+    const professorEmail = req.user.email; // Corrected to access `req.user.email`
+    console.log(professorEmail);
 
     // Find professor by email
     const professor = await Professor.findOne({ email: professorEmail });
@@ -52,7 +53,7 @@ const createCourse = async (req, res) => {
     if (!professor) {
       return res.status(404).json({ message: 'Professor not found.' });
     }
-
+    console.log(professor);
     // Create new course
     const newCourse = new Course({
       code,
@@ -62,7 +63,7 @@ const createCourse = async (req, res) => {
       section,
       professor: professor._id,
     });
-
+    console.log(newCourse);
     await newCourse.save();
     res.status(201).json({ message: 'Course created successfully.', course: newCourse });
   } catch (err) {

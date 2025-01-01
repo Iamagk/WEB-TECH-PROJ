@@ -6,7 +6,7 @@ const generateToken = (user) => {
     role: user.role || 'professor', // Add a default role if it's missing
   };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign(payload, process.env.JWT_SECRET);
   return token;
 };
 

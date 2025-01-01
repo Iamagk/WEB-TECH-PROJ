@@ -1,7 +1,6 @@
 const Professor = require('../models/professorModel');
 const { generateToken } = require('../services/tokenService');
 const { z } = require('zod');
-
 // Define Zod schemas for validation
 const signupSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
@@ -22,7 +21,6 @@ const signupProfessor = async (req, res) => {
     if (!validation.success) {
       return res.status(400).json({ message: 'Invalid input.', errors: validation.error.errors });
     }
-
     const { name, email, password } = validation.data;
 
     // Check if professor already exists
@@ -60,6 +58,7 @@ const loginProfessor = async (req, res) => {
 
     // Verify password
     const isMatch = await professor.comparePassword(password);
+    console.log(isMatch);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials.' });
     }
