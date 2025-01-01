@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const { z } = require('zod');
+const jwt = require("jsonwebtoken");
+const { z } = require("zod");
 
 // Zod validation for token
 const tokenSchema = z.object({
@@ -8,29 +8,36 @@ const tokenSchema = z.object({
 });
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.header('Authorization');
+  const authHeader = req.header("Authorization");
   if (!authHeader) {
-    return res.status(401).json({ message: 'Access Denied. No token provided' });
+    return res
+      .status(401)
+      .json({ message: "Access Denied. No token provided" });
   }
 
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ message: 'Access Denied. Token missing.' });
+    return res.status(401).json({ message: "Access Denied. Token missing." });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Decoded token:', decoded); // Debugging: Log the decoded token
+    console.log("Decoded token:", decoded); // Debugging: Log the decoded token
     // Validate decoded token with Zod
     const validatedPayload = tokenSchema.safeParse(decoded);
     if (!validatedPayload.success) {
-      return res.status(400).json({ message: 'Invalid Token format.', error: validatedPayload.error.errors });
+      return res
+        .status(400)
+        .json({
+          message: "Invalid Token format.",
+          error: validatedPayload.error.errors,
+        });
     }
 
     req.user = validatedPayload.data; // Attach the validated user info to the request
     next();
   } catch (err) {
-    res.status(400).json({ message: 'Invalid Token.', error: err.message });
+    res.status(400).json({ message: "Invalid Token.", error: err.message });
   }
 };
 

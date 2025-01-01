@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const professorSchema = new mongoose.Schema(
   {
     name: {
@@ -21,7 +21,7 @@ const professorSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: 'professor', // Default role is "professor"
+      default: "professor", // Default role is "professor"
     },
   },
   {
@@ -29,8 +29,8 @@ const professorSchema = new mongoose.Schema(
   }
 );
 // Hash the password before saving
-professorSchema.pre('save', async function (next) {
-  if (this.isModified('password')) {
+professorSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   next();
@@ -40,4 +40,4 @@ professorSchema.pre('save', async function (next) {
 professorSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
-module.exports = mongoose.model('Professor', professorSchema);
+module.exports = mongoose.model("Professor", professorSchema);

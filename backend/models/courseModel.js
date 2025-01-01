@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 // add semester also
 const courseSchema = new mongoose.Schema({
   code: {
@@ -24,7 +24,7 @@ const courseSchema = new mongoose.Schema({
   },
   professor: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Professor',
+    ref: "Professor",
     required: true, // Ensures the course is assigned to a professor
   },
   createdAt: {
@@ -38,9 +38,9 @@ const courseSchema = new mongoose.Schema({
 });
 
 // Automatically update `updatedAt` before saving
-courseSchema.pre('save', function (next) {
+courseSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
-module.exports = mongoose.model('Course', courseSchema);
+module.exports = mongoose.model("Course", courseSchema);

@@ -1,11 +1,11 @@
-const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const path = require('path');
-const cloudinary = require('cloudinary').v2;
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
+const cloudinary = require("cloudinary").v2;
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: 'dooaoygrc',
+  cloud_name: "dooaoygrc",
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
@@ -14,10 +14,15 @@ cloudinary.config({
 const generateCourseFile = async (courseData) => {
   try {
     const doc = new PDFDocument();
-    const filePath = path.join(__dirname, `../temp/${courseData.code}-course-file.pdf`);
+    const filePath = path.join(
+      __dirname,
+      `../temp/${courseData.code}-course-file.pdf`
+    );
 
     doc.pipe(fs.createWriteStream(filePath));
-    doc.fontSize(16).text(`Course File for ${courseData.name}`, { align: 'center' });
+    doc
+      .fontSize(16)
+      .text(`Course File for ${courseData.name}`, { align: "center" });
     doc.text(`\nCourse Code: ${courseData.code}`);
     doc.text(`Batch: ${courseData.batch}`);
     doc.text(`Category: ${courseData.category}`);
@@ -29,7 +34,7 @@ const generateCourseFile = async (courseData) => {
 
     // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(filePath, {
-      folder: 'course-files',
+      folder: "course-files",
     });
 
     // Delete the local file after upload
@@ -37,8 +42,8 @@ const generateCourseFile = async (courseData) => {
 
     return result.secure_url;
   } catch (err) {
-    console.error('Error generating course file:', err);
-    throw new Error('Course file generation failed.');
+    console.error("Error generating course file:", err);
+    throw new Error("Course file generation failed.");
   }
 };
 
