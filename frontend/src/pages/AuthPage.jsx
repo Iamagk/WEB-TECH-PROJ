@@ -17,10 +17,10 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-10">
+    <div className="min-h-screen grid grid-cols-12">
       {/* Left Section - Image */}
       <div
-        className="flex flex-col justify-start items-center col-span-6"
+        className="flex flex-col justify-start items-center col-span-8"
         style={{
           backgroundImage: `url('/bmsitcollege.jpg')`,
           backgroundSize: "cover",
@@ -38,18 +38,18 @@ const AuthPage = () => {
       </div>
 
       {/* Right Section - Sign-In Form */}
-      <div className="col-span-4 flex flex-col justify-center items-center bg-gray-100">
+      <div className="col-span-4 flex flex-col justify-center items-center bg-red-700">
         {/* Heading */}
-        <h1 className="text-3xl font-bold text-center text-red-700 mb-6">
+        <h1 className="text-3xl font-bold text-center text-white mb-6">
           Course File Generator
         </h1>
 
         {/* Sign-In Form */}
         <div className="p-10 rounded-lg shadow-lg shadow-red-700/30 w-full max-w-md bg-white">
           <h2 className="text-2xl font-bold text-left text-red-700 mb-6">
-            Sign In
+            Login
           </h2>
-          {error && <p className="text-maroon-500 text-center mb-4">{error}</p>}
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label
@@ -87,7 +87,7 @@ const AuthPage = () => {
               type="submit"
               className="w-full bg-red-700 text-white py-3 rounded-lg hover:bg-red-900 focus:outline-none"
             >
-              Log In
+              Login
             </button>
             <div className="mt-4 text-center">
               <p className="text-sm text-red-700">

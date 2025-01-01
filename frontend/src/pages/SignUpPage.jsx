@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 const SignUpPage = () => {
   return (
-    <div className="min-h-screen grid grid-cols-10">
+    <div className="min-h-screen grid grid-cols-12">
       {/* Left Section - Image */}
       <div
-        className="flex flex-col justify-start items-center col-span-6"
+        className="flex flex-col justify-start items-center col-span-8"
         style={{
           backgroundImage: `url('/bmsitcollege.jpg')`,
           backgroundSize: "cover",
@@ -24,9 +24,9 @@ const SignUpPage = () => {
       </div>
 
       {/* Right Section - Sign-Up Form */}
-      <div className="col-span-4 flex flex-col justify-center items-center bg-gray-100">
+      <div className="col-span-4 flex flex-col justify-center items-center bg-red-700">
         {/* Heading */}
-        <h1 className="text-3xl font-bold text-center text-red-700 mb-6">
+        <h1 className="text-3xl font-bold text-center text-white mb-6">
           Course File Generator
         </h1>
 
