@@ -5,6 +5,7 @@ import AuthPage from "./pages/AuthPage";
 import SignUpPage from "./pages/SignUpPage";
 import DashPage from "./pages/DashPage";
 import CoursePage from "./pages/CoursePage";
+import ProfilePage from "./pages/ProfilePage";
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -44,6 +45,7 @@ const App = () => {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/dashboard" element={<DashPage />} />
           <Route path="/dashboard/:courseCode" element={<CoursePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       )}
     </div>

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const DashPage = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-
+    const [searchTerm, setSearchTerm] = useState("");
     const [userInfo] = useState({
         name: "John Doe",
         email: "john.doe@example.com",
@@ -18,20 +18,29 @@ const DashPage = () => {
 
     const navigate = useNavigate(); // Initialize useNavigate
 
+    const handleHomePage = () => {
+        navigate("/dashboard");
+    }
+
     // Function to handle logout
     const handleLogout = () => {
         navigate("/"); // Redirect to the sign-in page
     };
+    
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
 
     const courseCategory = (category) => {
-        if (category === "T") {
-            return "Theory";
-        } else if (category === "L") {
-            return "Laboratory";
-        } else {
-            return "Unknown"; // In case the category is neither T nor L
-        }
+        if (category === "T") return "Theory";
+        else if (category === "L") return "Laboratory";
+        return "Unknown";
     };
+
+    const filteredCourses = courses.filter(course =>
+        course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.code.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     // Function to handle adding a course
     const handleAddCourse = () => {
@@ -50,19 +59,29 @@ const DashPage = () => {
         <div className="relative h-screen">
             {/* Sidebar */}
             <div
-                className={`fixed top-0 left-0 h-full w-64 bg-white text-red-700 transform ${
-                    isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed top-0 left-0 h-full w-64 text-red-700 transform ${
+                    isSidebarOpen ? "translate-x-0 bg-red-700 text-white" : "-translate-x-full bg-white"
                 } transition-transform duration-300 ease-in-out z-40 shadow-lg`}
             >
                 <div className="p-6">
-                    <h2 className="text-2xl font-bold mb-2 pt-12">{userInfo.name}</h2>
+                    <Link to="/profile" className="text-white hover:text-red-400">
+                        <h2 className="text-2xl font-bold mb-2 pt-12">{userInfo.name}</h2>
+                    </Link>
                     <p className="text-sm">{userInfo.email}</p>
                     <nav className="mt-6">
                         <ul>
                             <li className="mb-4">
                                 <button
+                                    onClick={handleHomePage}
+                                    className="text-white hover:text-red-400"
+                                >
+                                    Dashboard
+                                </button>
+                            </li>
+                            <li className="mb-4">
+                                <button
                                     onClick={handleLogout}
-                                    className="text-red-700 hover:text-red-900"
+                                    className="text-white hover:text-red-400"
                                 >
                                     Logout
                                 </button>
@@ -80,7 +99,7 @@ const DashPage = () => {
                 {isSidebarOpen ? (
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
+                        className="h-6 w-6 text-white hover:text-red-400"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -112,32 +131,43 @@ const DashPage = () => {
 
             {/* Main Content */}
             <div className="min-h-screen flex-1 bg-gray-100 p-6">
-                <h1 className="text-3xl font-semibold mb-6 pl-12 text-red-700">Your Courses</h1>
+                <div className="flex mb-6 pl-12">
+                    {/* Dashboard Heading */}
+                        <h1 className="text-3xl font-semibold text-red-700">Your Courses</h1>
+
+                    {/* Search Bar */}
+                    <input
+                        type="text"
+                        className="w-1/3 ml-12 px-4 py-2 border rounded-md shadow-md"
+                        placeholder="Search for a course"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                    />
+                </div>
+
+                {/* Course Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {courses.map((course) => (
-                        <div
-                            key={course.code}
-                            className="bg-white p-6 rounded-lg shadow-lg shadow-red-700/30"
-                        >
-                            <h2 className="text-xl font-bold mb-2 text-red-700">
-                                {course.code}
-                            </h2>
-
-                            <p className="text-red-700 mb-2">{course.name}</p>
-
-                            <p className="text-red-700 mb-2">{courseCategory(course.category)}</p>
-
-                            <p className="text-red-700 mb-6">{course.semester} {course.section}</p>
-
-                            <Link
-                                to={`/dashboard/${course.code}`} // Dynamic route to course page
-                                state={{ course }}
-                                className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-900"
-                            >
-                                Course File
-                            </Link>
-                        </div>
-                    ))}
+                    {filteredCourses.length === 0 ? (
+                        <p className="text-center text-lg text-gray-500 col-span-3">
+                            No courses found
+                        </p>
+                    ) : (
+                        filteredCourses.map((course) => (
+                            <div key={course.code} className="bg-white p-6 rounded-lg shadow-lg shadow-red-700/30">
+                                <h2 className="text-xl font-bold mb-2 text-red-700">{course.code}</h2>
+                                <p className="text-red-700 mb-2">{course.name}</p>
+                                <p className="text-red-700 mb-2">{courseCategory(course.category)}</p>
+                                <p className="text-red-700 mb-6">{course.semester} {course.section}</p>
+                                <Link
+                                    to={`/dashboard/${course.code}`}
+                                    state={{ course }}
+                                    className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-900"
+                                >
+                                    Course File
+                                </Link>
+                            </div>
+                        ))
+                    )}
                 </div>
 
                 {/* Floating Add Course Button */}
@@ -161,7 +191,6 @@ const DashPage = () => {
                         />
                     </svg>
                 </button>
-
             </div>
         </div>
     );
