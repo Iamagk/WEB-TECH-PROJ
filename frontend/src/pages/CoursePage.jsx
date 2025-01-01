@@ -20,7 +20,6 @@ const CoursePage = () => {
         cieMarks: null,
         seeMarks: null,
         sampleRecord: null,
-        sampleCIE: null,
     });
 
     const courseCategory = (category) => {
@@ -83,27 +82,29 @@ const CoursePage = () => {
             <div className="relative h-screen">
                 {/* Sidebar */}
                 <div
-                    className={`fixed top-0 left-0 h-full w-64 bg-white text-red-700 transform ${
-                        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                    className={`fixed top-0 left-0 h-full w-64 text-red-700 transform ${
+                        isSidebarOpen ? "translate-x-0 bg-red-700 text-white" : "-translate-x-full bg-white"
                     } transition-transform duration-300 ease-in-out z-40 shadow-lg`}
                 >
                     <div className="p-6">
-                        <h2 className="text-2xl font-bold mb-2 pt-12">{userInfo.name}</h2>
+                        <Link to="/profile" className="text-white hover:text-red-400">
+                            <h2 className="text-2xl font-bold mb-2 pt-12">{userInfo.name}</h2>
+                        </Link>
                         <p className="text-sm">{userInfo.email}</p>
                         <nav className="mt-6">
                             <ul>
                                 <li className="mb-4">
                                     <button
                                         onClick={handleHomePage}
-                                        className="text-red-700 hover:text-red-900"
+                                        className="text-white hover:text-red-400"
                                     >
-                                        Home
+                                        Dashboard
                                     </button>
                                 </li>
                                 <li className="mb-4">
                                     <button
                                         onClick={handleLogout}
-                                        className="text-red-700 hover:text-red-900"
+                                        className="text-white hover:text-red-400"
                                     >
                                         Logout
                                     </button>
@@ -121,7 +122,7 @@ const CoursePage = () => {
                     {isSidebarOpen ? (
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
+                            className="h-6 w-6 text-white hover:text-red-400"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
