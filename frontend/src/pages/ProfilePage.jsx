@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
@@ -6,19 +6,138 @@ const ProfilePage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [userInfo, setUserInfo] = useState({
-        name: "John Doe",
-        email: "john.doe@example.com",
-        phone: "(123) 456-7890",
-        bio: "Professor in the Department of Computer Science with a focus on software engineering and cloud computing.",
+        name: "",
+        email: "",
+        role: "",
     });
-    const [newInfo, setNewInfo] = useState(userInfo);
+    const [newInfo, setNewInfo] = useState({
+        name: "",
+        email: "",
+        role: "",
+        password: ""
+    });
     const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
-    const handleEditProfile = () => {
-        setUserInfo(newInfo);
-        setIsEditing(false);
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+
+                const response = await fetch('http://localhost:8000/v0/professors/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile data');
+                }
+
+                const data = await response.json();
+                if (isMounted) {
+                    setUserInfo({
+                        name: data.professor.name,
+                        email: data.professor.email,
+                        role: data.professor.role,
+                    });
+                    setNewInfo({
+                        name: data.professor.name,
+                        email: data.professor.email,
+                        role: data.professor.role,
+                        password: ""
+                    });
+                    setLoading(false);
+                }
+            } catch (err) {
+                if (isMounted) {
+                    setError(err.message);
+                    console.error('Error fetching profile:', err);
+                    if (err.message === 'No authentication token found') {
+                        navigate('/');
+                    }
+                }
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [navigate]);
+
+    const handleEditProfile = async () => {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            console.log('Making request to:', 'http://localhost:8000/v0/professors/profile');
+            console.log('Token:', token);
+            
+            const response = await fetch('http://localhost:8000/v0/professors/profile', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include',  // Include credentials
+                body: JSON.stringify({
+                    name: newInfo.name,
+                    email: newInfo.email,
+                    ...(newInfo.password && { password: newInfo.password })
+                })
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.log('Error response:', errorText);
+                
+                if (response.status === 401) {
+                    navigate('/');
+                    return;
+                }
+                throw new Error(errorText || 'Failed to update profile');
+            }
+
+            const data = await response.json();
+            setUserInfo({
+                ...userInfo,
+                name: data.professor.name,
+                email: data.professor.email,
+                role: data.professor.role
+            });
+            setNewInfo({
+                ...newInfo,
+                password: ''
+            });
+            setIsEditing(false);
+            alert('Profile updated successfully!');
+        } catch (err) {
+            console.error('Full error:', err);
+            setError(err.message);
+            alert('Failed to update profile: ' + err.message);
+            if (err.message === 'No authentication token found') {
+                navigate('/');
+            }
+        }
     };
 
     const handleHomePage = () => {
@@ -46,6 +165,22 @@ const ProfilePage = () => {
     const handleLogout = () => {
         navigate("/"); // Redirect to the sign-in page
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex justify-center items-center">
+                <p className="text-xl text-red-700">Loading profile...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex justify-center items-center">
+                <p className="text-xl text-red-700">Error: {error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="relative h-screen">
@@ -135,14 +270,8 @@ const ProfilePage = () => {
                         </div>
                         <div>
                             <p className="text-lg text-red-700">{userInfo.email}</p>
-                            <p className="text-md text-red-700">{userInfo.phone}</p>
+                            <p className="text-md text-red-700">Role: {userInfo.role}</p>
                         </div>
-                    </div>
-
-                    {/* Bio Section */}
-                    <div className="mb-8">
-                        <h3 className="text-xl font-semibold text-red-700 mb-2">Bio</h3>
-                        <p className="text-gray-600">{userInfo.bio}</p>
                     </div>
 
                     {/* Action Buttons */}
@@ -162,12 +291,15 @@ const ProfilePage = () => {
                     </div>
                 </div>
 
-                {/* Edit Profile and Change Password Modals */}
+                {/* Edit Profile Modal */}
                 {isEditing && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                             <h3 className="text-xl font-semibold text-red-700 mb-2">Edit Profile</h3>
-                            <form className="space-y-4">
+                            <form className="space-y-4" onSubmit={(e) => {
+                                e.preventDefault();
+                                handleEditProfile();
+                            }}>
                                 <input
                                     type="text"
                                     name="name"
@@ -175,6 +307,7 @@ const ProfilePage = () => {
                                     onChange={handleInputChange}
                                     className="mt-2 p-2 w-full border border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                                     placeholder="Full Name"
+                                    required
                                 />
                                 <input
                                     type="email"
@@ -183,19 +316,19 @@ const ProfilePage = () => {
                                     onChange={handleInputChange}
                                     className="mt-2 p-2 w-full border border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                                     placeholder="Email Address"
+                                    required
                                 />
                                 <input
-                                    type="text"
-                                    name="phone"
-                                    value={newInfo.phone}
+                                    type="password"
+                                    name="password"
+                                    value={newInfo.password}
                                     onChange={handleInputChange}
                                     className="mt-2 p-2 w-full border border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                    placeholder="Phone Number"
+                                    placeholder="New Password (optional)"
                                 />
                                 <div className="flex justify-end space-x-4">
                                     <button
-                                        type="button"
-                                        onClick={handleEditProfile}
+                                        type="submit"
                                         className="px-6 py-2 bg-red-700 text-white rounded-md hover:bg-red-800"
                                     >
                                         Save Changes
@@ -213,6 +346,7 @@ const ProfilePage = () => {
                     </div>
                 )}
 
+                {/* Change Password Modal */}
                 {isChangingPassword && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">

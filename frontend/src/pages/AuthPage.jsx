@@ -131,7 +131,7 @@ const AuthPage = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:8000/v0/login", {
+      const response = await axios.post("http://localhost:8000/v0/professors/login", {
         email,
         password,
       });

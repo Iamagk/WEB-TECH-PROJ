@@ -268,7 +268,7 @@ const SignUpPage = () => {
     setSuccess(null);
 
     try {
-      await axios.post("http://localhost:8000/v0/signup", formData, {
+      await axios.post("http://localhost:8000/v0/professors/signup", formData, {
         headers: {
           "Content-Type": "application/json",
         },
