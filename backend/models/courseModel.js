@@ -1,5 +1,20 @@
 const mongoose = require("mongoose");
 // add semester also
+const fileSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    required: true
+  },
+  url: {
+    type: String,
+    required: true
+  },
+  uploadedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
 const courseSchema = new mongoose.Schema({
   code: {
     type: String,
@@ -35,6 +50,7 @@ const courseSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  files: [fileSchema]
 });
 
 // Automatically update `updatedAt` before saving

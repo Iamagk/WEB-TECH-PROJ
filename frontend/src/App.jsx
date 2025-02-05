@@ -6,6 +6,7 @@ import SignUpPage from "./pages/SignUpPage";
 import DashPage from "./pages/DashPage";
 import CoursePage from "./pages/CoursePage";
 import ProfilePage from "./pages/ProfilePage";
+import CloudinaryTest from './components/CloudinaryTest';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       )}
+      <CloudinaryTest />
     </div>
   );
 };

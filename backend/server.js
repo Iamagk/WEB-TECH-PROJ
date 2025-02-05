@@ -18,19 +18,23 @@ const MONGO_URI = process.env.MONGO_URI; // MongoDB connection string
 // Initialize Express
 const app = express();
 
-// CORS options
-const corsOptions = {
-  origin: "http://localhost:5173", // Frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-  exposedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-app.use(cors(corsOptions));
+// Configure body parser with higher limits
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ 
+    extended: true,
+    limit: '50mb',
+    parameterLimit: 50000
+}));
+
+// Configure CORS with proper options
+app.use(cors({
+    origin:  'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
 // Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev')); // Enable logging for development
 app.use(fileUpload({ createParentPath: true })); // Enable file uploads
 
@@ -66,16 +70,16 @@ app.get('/health', (req, res) => {
 console.log('Mounting routes...');
 
 // Mount course routes
-app.use('/v0/courses', (req, res, next) => {
-    console.log('Course route accessed:', req.method, req.url);
-    next();
-}, courseRoutes);
+app.use('/v0/courses', courseRoutes);
 
 // Mount professor routes
 app.use('/v0/professors', (req, res, next) => {
     console.log('Professor route accessed:', req.method, req.url);
     next();
 }, professorRoutes);
+
+// Add test routes
+app.use('/v0/test', require('./routes/testRoutes'));
 
 // Move the 404 handler to be after all routes
 app.use('*', (req, res) => {
